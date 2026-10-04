@@ -165,6 +165,7 @@ export function Layout({ children }: { children: ReactNode }) {
         <div className="min-w-0 flex-1">
           <Brand />
         </div>
+        <InstallButton iconOnly />
         <span
           className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-100 text-xs font-bold text-brand-800"
           aria-hidden="true"
@@ -189,14 +190,16 @@ export function Layout({ children }: { children: ReactNode }) {
         }`}
         aria-label="Site navigation"
       >
-        <div className="flex items-center justify-between px-5 pb-2 pt-5">
+        <div className="flex items-center justify-between gap-2 px-5 pb-2 pt-5">
           <Brand />
-          <button
-            type="button"
-            onClick={() => setDrawerOpen(false)}
-            aria-label="Close navigation menu"
-            className="flex h-9 w-9 items-center justify-center rounded-xl text-slate-500 transition hover:bg-slate-100 lg:hidden"
-          >
+          <div className="flex items-center gap-1">
+            <InstallButton iconOnly />
+            <button
+              type="button"
+              onClick={() => setDrawerOpen(false)}
+              aria-label="Close navigation menu"
+              className="flex h-10 w-10 items-center justify-center rounded-xl text-slate-500 transition hover:bg-slate-100 lg:hidden"
+            >
             <svg
               className="h-5 w-5"
               viewBox="0 0 24 24"
@@ -209,6 +212,7 @@ export function Layout({ children }: { children: ReactNode }) {
               <path d="M6 6l12 12M18 6L6 18" />
             </svg>
           </button>
+        </div>
         </div>
 
         <NavList
