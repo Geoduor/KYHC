@@ -205,6 +205,29 @@ alembic upgrade head
 alembic downgrade -1
 ```
 
+## Deployment
+
+KYHC is deployed without containers:
+
+| Piece     | Host                    |
+| --------- | ----------------------- |
+| Database  | Supabase (PostgreSQL)   |
+| Backend   | Render (web service)    |
+| Frontend  | Vercel (static hosting) |
+
+The complete walkthrough lives in [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+In short:
+
+1. **Supabase** — create a project and copy the shared pooler connection
+   string, converting it to `postgresql+psycopg://...?sslmode=require`.
+2. **Render** — apply `render.yaml` (New → Blueprint). Provide
+   `DATABASE_URL` and `BACKEND_CORS_ORIGINS`; `SECRET_KEY` is generated.
+   Migrations run automatically at start.
+3. **Vercel** — import the repo with `frontend` as the root directory and
+   set `VITE_API_URL` to the Render URL.
+4. Set `DATABASE_PREPARE_STATEMENTS=false` when connecting through
+   Supabase's transaction pooler (port 6543).
+
 ## Continuous Integration
 
 `.github/workflows/ci.yml` runs on every push and pull request to `main`:
@@ -224,7 +247,9 @@ alembic downgrade -1
 - [x] Pagination and filtering on list endpoints
 - [x] React web client (dashboard, CRUD, statistics)
 - [x] CI pipeline
+- [x] Render + Vercel + Supabase deployment setup
 - [ ] Match event entry and attendance UI refinements
+- [ ] Email notifications for upcoming sessions
 - [ ] Docker setup (deferred — developing on Windows for now)
 
 ## License

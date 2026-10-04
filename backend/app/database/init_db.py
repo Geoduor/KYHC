@@ -45,11 +45,12 @@ def create_super_admin(
         or DEFAULT_ADMIN_EMAIL
     )
 
-    password = (
-        password
-        or os.getenv("SUPER_ADMIN_PASSWORD")
-        or DEFAULT_ADMIN_PASSWORD
-    )
+    password = password or os.getenv("SUPER_ADMIN_PASSWORD")
+
+    using_default_password = password is None
+
+    if using_default_password:
+        password = DEFAULT_ADMIN_PASSWORD
 
     db = SessionLocal()
 
@@ -69,12 +70,19 @@ def create_super_admin(
 
         admin = UserRepository.create(db, admin)
 
-        print(
-            "Super admin created:\n"
-            f"  email:    {email}\n"
-            f"  password: {password}\n"
-            "Change the password after the first login."
-        )
+        if using_default_password:
+            print(
+                "Super admin created with the built-in default password:\n"
+                f"  email:    {email}\n"
+                f"  password: {password}\n"
+                "Change the password after the first login."
+            )
+        else:
+            print(
+                "Super admin created:\n"
+                f"  email:    {email}\n"
+                "  password: (read from SUPER_ADMIN_PASSWORD)"
+            )
 
         return admin
 

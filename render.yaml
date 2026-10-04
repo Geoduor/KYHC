@@ -1,0 +1,41 @@
+# Render Blueprint for the KYHC API
+#
+# Deploy: Render Dashboard -> New -> Blueprint -> connect this repo.
+# Secrets are marked "sync: false" and are entered in the dashboard.
+
+services:
+  - type: web
+    name: kyhc-api
+    runtime: python
+    plan: free
+    region: frankfurt
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    # Migrations run at start because pre-deploy commands require a
+    # paid plan. Safe to run on every boot; Alembic is idempotent.
+    startCommand: alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.7"
+      - key: APP_NAME
+        value: KYHC API
+      - key: APP_VERSION
+        value: 1.0.0
+      # Supabase connection string (see docs/DEPLOYMENT.md)
+      - key: DATABASE_URL
+        sync: false
+      - key: DATABASE_PREPARE_STATEMENTS
+        value: "false"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALGORITHM
+        value: HS256
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "60"
+      - key: SQL_ECHO
+        value: "false"
+      # Set to your Vercel URL, e.g. https://kyhc.vercel.app
+      - key: BACKEND_CORS_ORIGINS
+        sync: false
