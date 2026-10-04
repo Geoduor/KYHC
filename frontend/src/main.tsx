@@ -15,3 +15,13 @@ createRoot(document.getElementById("root")!).render(
     </BrowserRouter>
   </StrictMode>,
 );
+
+// The install prompt and offline support need a service worker.
+// Register only in production builds so local development is unaffected.
+if (import.meta.env.PROD && "serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js").catch(() => {
+      // Offline support is a progressive enhancement — ignore failures.
+    });
+  });
+}

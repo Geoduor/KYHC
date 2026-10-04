@@ -3,6 +3,7 @@ import { NavLink, useLocation } from "react-router-dom";
 
 import { useAuth } from "../context/AuthContext";
 import { initials, roleLabel } from "../lib/format";
+import { InstallButton } from "./InstallButton";
 
 interface NavItem {
   to: string;
@@ -111,9 +112,10 @@ function UserFooter() {
           </p>
         </div>
       </div>
+      <InstallButton className="mt-3 w-full" />
       <button
         onClick={logout}
-        className="mt-3 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-xs font-semibold text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 active:scale-[0.99]"
+        className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-xs font-semibold text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 active:scale-[0.99]"
       >
         Sign out
       </button>

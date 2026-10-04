@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 
 import { Button, Input } from "../components/ui";
+import { InstallButton } from "../components/InstallButton";
 import { useAuth } from "../context/AuthContext";
 import { ApiError } from "../lib/api";
 
@@ -180,6 +181,7 @@ export default function LoginPage() {
             <p className="text-center text-xs leading-relaxed text-slate-400">
               Use the super admin account created during setup.
             </p>
+            <InstallButton className="w-full" />
           </form>
         </div>
       </section>
