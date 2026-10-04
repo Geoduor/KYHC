@@ -44,7 +44,7 @@ function Brand() {
   return (
     <div className="flex items-center gap-3">
       <img
-        src="/logo.jpeg"
+        src="/logo.png"
         alt="Kisumu Youngstars Hockey Club logo"
         className="h-10 w-10 shrink-0 rounded-xl bg-white object-contain shadow-card ring-1 ring-slate-200"
       />

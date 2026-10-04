@@ -64,7 +64,7 @@ export default function LoginPage() {
 
         <div className="relative flex items-center gap-3">
           <img
-            src="/logo.jpeg"
+            src="/logo.png"
             alt="Kisumu Youngstars Hockey Club logo"
             className="h-12 w-12 rounded-2xl bg-white object-contain shadow-card ring-1 ring-white/20"
           />

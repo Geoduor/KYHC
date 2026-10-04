@@ -1,7 +1,7 @@
 /* KYHC service worker: offline fallback plus same-origin asset caching. */
 
 const CACHE = "kyhc-shell-v1";
-const CORE = ["/", "/index.html", "/logo.jpeg", "/site.webmanifest"];
+const CORE = ["/", "/index.html", "/logo.png", "/site.webmanifest"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
