@@ -73,8 +73,66 @@ events:
 }
 ```
 
+`GET /statistics/team/{team_id}` returns an aggregate built from completed
+matches and the team's player events:
+
+```json
+{
+  "team_id": 1,
+  "team_name": "Men's Team",
+  "played": 4,
+  "wins": 3,
+  "draws": 0,
+  "losses": 1,
+  "goals_for": 9,
+  "goals_against": 4,
+  "goal_difference": 5,
+  "goal_events": 9,
+  "yellow_cards": 2,
+  "red_cards": 0
+}
+```
+
 Per-match detailed statistics (shots, passes, tackles, rating, MVP, ...)
-are stored through the `player-statistics` endpoints.
+are stored through the `player-statistics` endpoints. A player can have
+only one statistics record per match.
+
+## Pagination and Filtering
+
+Every list endpoint returns a page envelope:
+
+```json
+{
+  "items": [ ... ],
+  "total": 42,
+  "skip": 0,
+  "limit": 25
+}
+```
+
+- `skip` (default 0, min 0) and `limit` (default 50, 1–200).
+- Entity-specific filters, for example:
+  - Teams: `search`, `category`, `is_active`
+  - Players: `search`, `team_id`, `position`, `is_active`
+  - Coaches: `search`, `team_id`, `is_active`
+  - Matches: `team_id`, `status`, `competition`, `upcoming_only`
+  - Match events: `match_id`, `player_id`, `event_type`
+  - Training sessions: `coach_id`, `is_completed`
+  - Attendance: `training_session_id`, `player_id`, `status`
+  - Player statistics: `player_id`, `match_id`, `mvp_only`
+  - Users (admin): `search`, `role`, `is_active`
+
+## Permissions
+
+| Area                             | Allowed roles                          |
+| -------------------------------- | -------------------------------------- |
+| Reading anything                 | Any authenticated user                 |
+| Teams / players / coaches / matches writes | SUPER_ADMIN, CLUB_ADMIN, TEAM_MANAGER |
+| Match events / training / statistics writes | SUPER_ADMIN, CLUB_ADMIN, COACH, ASSISTANT_COACH |
+| User management                  | SUPER_ADMIN, CLUB_ADMIN                |
+
+Public registration always creates a `PLAYER`. Administrators create staff
+accounts via `POST /users/`.
 
 ## Error Responses
 

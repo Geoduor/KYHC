@@ -1,4 +1,17 @@
+import os
 from collections.abc import Generator
+
+# Provide safe defaults so the suite can run anywhere (including CI)
+# before the application settings are imported.
+os.environ.setdefault("APP_NAME", "KYHC API")
+os.environ.setdefault("APP_VERSION", "1.0.0")
+os.environ.setdefault(
+    "DATABASE_URL",
+    "postgresql+psycopg://postgres:postgres@localhost:5432/kyhc_db",
+)
+os.environ.setdefault("SECRET_KEY", "test-secret-key")
+os.environ.setdefault("ALGORITHM", "HS256")
+os.environ.setdefault("ACCESS_TOKEN_EXPIRE_MINUTES", "60")
 
 import pytest
 from fastapi.testclient import TestClient

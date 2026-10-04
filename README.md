@@ -1,6 +1,6 @@
 # KYHC — Kisumu Youngsters Hockey Club Management System
 
-A club management backend for **Kisumu Youngsters Hockey Club**.
+A club management system for **Kisumu Youngsters Hockey Club**.
 
 The system tracks teams, players, coaches, matches, match events, training
 sessions, attendance, and player statistics — with JWT authentication and
@@ -8,14 +8,16 @@ role-based access control.
 
 ## Tech Stack
 
-| Layer      | Technology                                |
-| ---------- | ----------------------------------------- |
-| API        | FastAPI + Uvicorn                         |
-| Database   | PostgreSQL 18 (SQLAlchemy 2.0 + psycopg)  |
-| Migrations | Alembic                                   |
+| Layer      | Technology                                  |
+| ---------- | ------------------------------------------- |
+| Backend    | FastAPI + Uvicorn                           |
+| Database   | PostgreSQL 18 (SQLAlchemy 2.0 + psycopg)    |
+| Migrations | Alembic                                     |
 | Auth       | OAuth2 password flow with JWT (python-jose) |
-| Passwords  | pwdlib (Argon2)                           |
-| Tests      | pytest + FastAPI TestClient (SQLite)      |
+| Passwords  | pwdlib (Argon2)                             |
+| Frontend   | React 19 + Vite + TypeScript + Tailwind CSS |
+| Backend tests | pytest + FastAPI TestClient (SQLite)     |
+| CI         | GitHub Actions (backend tests + frontend build) |
 
 ## Project Layout
 
@@ -24,8 +26,8 @@ KYHC/
 ├── backend/
 │   ├── alembic/               # Database migrations
 │   ├── app/
-│   │   ├── api/v1/            # API routes (auth, teams, players, ...)
-│   │   ├── core/              # Settings and security helpers
+│   │   ├── api/v1/            # API routes (auth, users, teams, ...)
+│   │   ├── core/              # Settings, security, roles, pagination
 │   │   ├── database/          # Engine, session, init/seed helpers
 │   │   ├── dependencies/      # Auth dependencies (current user, roles)
 │   │   ├── models/            # SQLAlchemy models
@@ -34,20 +36,21 @@ KYHC/
 │   │   └── services/          # Business logic (statistics)
 │   ├── tests/                 # pytest suite
 │   └── requirements*.txt
+├── frontend/
+│   └── src/
+│       ├── components/        # Layout, table, modal, UI primitives
+│       ├── context/           # Auth provider
+│       ├── hooks/             # List/pagination hook
+│       ├── lib/               # API client, formatters
+│       ├── pages/             # Login, dashboard, teams, players, ...
+│       └── types/             # Shared TypeScript types
 ├── docs/                      # Project documentation
-├── docker/                    # (planned) container setup
-├── frontend/                  # (planned) web client
-└── scripts/                   # (planned) utility scripts
+└── .github/workflows/         # CI pipeline
 ```
 
 ## Getting Started
 
-### 1. Prerequisites
-
-- Python 3.12+
-- PostgreSQL 15+
-
-### 2. Set up the backend
+### Backend
 
 ```bash
 cd backend
@@ -64,25 +67,20 @@ pip install -r requirements.txt
 cp .env.example .env   # then edit DATABASE_URL and SECRET_KEY
 ```
 
-### 3. Create the database
+Create the database and apply migrations:
 
 ```bash
 createdb kyhc_db
-```
-
-### 4. Apply migrations
-
-```bash
 alembic upgrade head
 ```
 
-### 5. Seed the first super admin (optional)
+Seed the first super admin (optional):
 
 ```bash
 python -m app.database.init_db
 ```
 
-### 6. Run the API
+Run the API:
 
 ```bash
 uvicorn app.main:app --reload
@@ -90,7 +88,21 @@ uvicorn app.main:app --reload
 
 - API: http://127.0.0.1:8000
 - Swagger UI: http://127.0.0.1:8000/docs
-- ReDoc: http://127.0.0.1:8000/redoc
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+
+cp .env.example .env   # adjust VITE_API_URL if needed
+npm run dev
+```
+
+- Web app: http://localhost:5173
+
+Sign in with the super admin account created during backend setup, or a
+staff account created by an administrator through the Users page.
 
 ## Running the Tests
 
@@ -101,7 +113,14 @@ pytest -q
 ```
 
 The suite runs against an in-memory SQLite database, so no PostgreSQL is
-needed for tests.
+needed for tests. It also works without a `.env` file (CI-safe defaults).
+
+Frontend checks:
+
+```bash
+cd frontend
+npm run build   # typecheck + production build
+```
 
 ## API Overview
 
@@ -111,7 +130,7 @@ and `auth/login` requires a bearer token.
 | Area                | Routes                                                     |
 | ------------------- | ---------------------------------------------------------- |
 | Authentication      | `POST /auth/register`, `POST /auth/login`                  |
-| Users               | `GET /users/me`                                            |
+| Users               | `GET /users/me`; admin CRUD under `/users/`                |
 | Teams               | `GET/POST /teams/`, `GET/PUT/DELETE /teams/{id}`           |
 | Players             | `GET/POST /players/`, `GET/PUT/DELETE /players/{id}`       |
 | Coaches             | `GET/POST /coaches/`, `GET/PUT/DELETE /coaches/{id}`       |
@@ -120,15 +139,46 @@ and `auth/login` requires a bearer token.
 | Training sessions   | `GET/POST /training-sessions/`, `GET/PUT/DELETE /training-sessions/{id}` |
 | Training attendance | `GET/POST /training-attendance/`, `GET/PUT/DELETE /training-attendance/{id}` |
 | Player statistics   | `GET/POST /player-statistics/`, `GET/PUT/DELETE /player-statistics/{id}` |
-| Statistics summary  | `GET /statistics/player/{player_id}`                       |
+| Statistics summary  | `GET /statistics/player/{id}`, `GET /statistics/team/{id}` |
+
+### Pagination and filters
+
+List endpoints return a page envelope and accept filters:
+
+```json
+{
+  "items": [ ... ],
+  "total": 42,
+  "skip": 0,
+  "limit": 25
+}
+```
+
+Common query parameters: `skip`, `limit`, plus per-entity filters such as
+`search`, `team_id`, `status`, `is_active`, `event_type`, etc.
+
+### Roles and permissions
+
+| Role            | Read | Manage teams/players/coaches/matches | Manage events/training/statistics | Manage users |
+| --------------- | ---- | ------------------------------------ | --------------------------------- | ------------ |
+| SUPER_ADMIN     | ✓    | ✓                                    | ✓                                 | ✓            |
+| CLUB_ADMIN      | ✓    | ✓                                    | ✓                                 | ✓            |
+| TEAM_MANAGER    | ✓    | ✓                                    | —                                 | —            |
+| COACH           | ✓    | —                                    | ✓                                 | —            |
+| ASSISTANT_COACH | ✓    | —                                    | ✓                                 | —            |
+| MEDIC / FINANCE | ✓    | —                                    | —                                 | —            |
+| PLAYER          | ✓    | —                                    | —                                 | —            |
+
+Public registration always creates a `PLAYER` account; staff accounts are
+created by administrators through `POST /users/`.
 
 ### Authentication
 
 ```bash
-# Register
+# Register (creates a PLAYER account)
 curl -X POST http://127.0.0.1:8000/api/v1/auth/register \
   -H "Content-Type: application/json" \
-  -d '{"full_name":"Jane Doe","email":"jane@kyhc.local","password":"secret123","role":"CLUB_ADMIN"}'
+  -d '{"full_name":"Jane Doe","email":"jane@kyhc.local","password":"secret123"}'
 
 # Login (OAuth2 password form)
 curl -X POST http://127.0.0.1:8000/api/v1/auth/login \
@@ -141,14 +191,6 @@ Use the returned token on all other requests:
 curl http://127.0.0.1:8000/api/v1/teams/ \
   -H "Authorization: Bearer <access_token>"
 ```
-
-### Roles
-
-`SUPER_ADMIN`, `CLUB_ADMIN`, `COACH`, `ASSISTANT_COACH`, `TEAM_MANAGER`,
-`MEDIC`, `FINANCE`, `PLAYER`.
-
-Role-restricted dependencies are available through
-`app.dependencies.auth.require_roles(...)`.
 
 ## Database Migrations
 
@@ -163,19 +205,27 @@ alembic upgrade head
 alembic downgrade -1
 ```
 
+## Continuous Integration
+
+`.github/workflows/ci.yml` runs on every push and pull request to `main`:
+
+- **Backend**: installs `requirements-dev.txt` and runs the pytest suite.
+- **Frontend**: installs npm dependencies and runs the production build
+  (which includes TypeScript typechecking).
+
 ## Roadmap
 
 - [x] Authentication (register/login, JWT)
 - [x] Teams, players and coaches CRUD
 - [x] Matches and match events CRUD
 - [x] Training sessions and attendance
-- [x] Player match statistics and summary endpoint
-- [x] Automated test suite
-- [ ] Role restrictions on write endpoints
-- [ ] Pagination and filtering on list endpoints
-- [ ] Frontend web client
-- [ ] Docker Compose setup
-- [ ] CI pipeline
+- [x] Player match statistics and summary endpoints
+- [x] Role restrictions on write endpoints
+- [x] Pagination and filtering on list endpoints
+- [x] React web client (dashboard, CRUD, statistics)
+- [x] CI pipeline
+- [ ] Match event entry and attendance UI refinements
+- [ ] Docker setup (deferred — developing on Windows for now)
 
 ## License
 
