@@ -42,12 +42,11 @@ const NAV_ITEMS: NavItem[] = [
 function Brand() {
   return (
     <div className="flex items-center gap-3">
-      <span
-        className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-800 text-sm font-extrabold tracking-tight text-white shadow-card"
-        aria-hidden="true"
-      >
-        KY
-      </span>
+      <img
+        src="/logo.jpeg"
+        alt="Kisumu Youngsters Hockey Club logo"
+        className="h-10 w-10 shrink-0 rounded-xl bg-white object-contain shadow-card ring-1 ring-slate-200"
+      />
       <div className="min-w-0">
         <p className="truncate text-sm font-bold text-slate-900">KYHC</p>
         <p className="truncate text-xs text-slate-500">

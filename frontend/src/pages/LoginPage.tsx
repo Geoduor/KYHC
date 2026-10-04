@@ -53,7 +53,7 @@ export default function LoginPage() {
         className="relative overflow-hidden bg-gradient-to-br from-brand-900 via-brand-800 to-brand-950 px-6 py-10 text-white sm:px-10 lg:flex lg:w-[46%] lg:flex-col lg:justify-between lg:px-12 lg:py-12"
       >
         <div
-          className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-gold-400/15 blur-2xl"
+          className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-accent-400/15 blur-2xl"
           aria-hidden="true"
         />
         <div
@@ -62,12 +62,11 @@ export default function LoginPage() {
         />
 
         <div className="relative flex items-center gap-3">
-          <span
-            className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gold-400 text-sm font-extrabold text-brand-950 shadow-card"
-            aria-hidden="true"
-          >
-            KY
-          </span>
+          <img
+            src="/logo.jpeg"
+            alt="Kisumu Youngsters Hockey Club logo"
+            className="h-12 w-12 rounded-2xl bg-white object-contain shadow-card ring-1 ring-white/20"
+          />
           <div>
             <p className="text-sm font-bold tracking-tight">KYHC</p>
             <p className="text-xs text-brand-200">
@@ -77,7 +76,7 @@ export default function LoginPage() {
         </div>
 
         <div className="relative mt-8 lg:mt-0">
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-gold-400">
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-accent-400">
             Club management
           </p>
           <h1 className="mt-3 max-w-md text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
@@ -96,7 +95,7 @@ export default function LoginPage() {
                 className="flex items-start gap-3 rounded-2xl bg-white/10 p-4 ring-1 ring-white/10 backdrop-blur"
               >
                 <span
-                  className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gold-400 text-[11px] font-extrabold text-brand-950"
+                  className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent-400 text-[11px] font-extrabold text-brand-950"
                   aria-hidden="true"
                 >
                   ✓

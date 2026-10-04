@@ -39,7 +39,7 @@
       ]
     },
     {
-      "source": "/favicon.svg",
+      "source": "/logo.jpeg",
       "headers": [
         {
           "key": "Cache-Control",

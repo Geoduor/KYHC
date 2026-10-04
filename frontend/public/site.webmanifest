@@ -4,14 +4,14 @@
   "description": "Manage KYHC teams, players, coaches, fixtures, training and statistics.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f8fafc",
-  "theme_color": "#14532d",
+  "background_color": "#eef6fd",
+  "theme_color": "#10253a",
   "icons": [
     {
-      "src": "/favicon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "src": "/logo.jpeg",
+      "sizes": "1229x864",
+      "type": "image/jpeg",
+      "purpose": "any"
     }
   ]
 }

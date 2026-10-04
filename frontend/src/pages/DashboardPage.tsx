@@ -23,9 +23,9 @@ interface Stat {
 
 const STAT_STYLES: Array<Pick<Stat, "icon" | "gradient">> = [
   { icon: "◈", gradient: "from-brand-500 to-brand-700" },
-  { icon: "●", gradient: "from-emerald-500 to-teal-700" },
-  { icon: "★", gradient: "from-amber-400 to-orange-600" },
-  { icon: "◎", gradient: "from-sky-500 to-indigo-700" },
+  { icon: "●", gradient: "from-accent-400 to-brand-600" },
+  { icon: "★", gradient: "from-brand-700 to-brand-950" },
+  { icon: "◎", gradient: "from-brand-400 to-brand-800" },
 ];
 
 export default function DashboardPage() {
