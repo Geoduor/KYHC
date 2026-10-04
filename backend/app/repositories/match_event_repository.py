@@ -12,21 +12,50 @@ class MatchEventRepository:
     """
 
     @staticmethod
-    def get_all(db: Session):
-        return (
-            db.query(MatchEvent)
-            .order_by(
+    def get_all(
+        db: Session,
+        *,
+        skip: int = 0,
+        limit: int = 50,
+        match_id: int | None = None,
+        player_id: int | None = None,
+        event_type: MatchEventType | None = None,
+    ) -> tuple[list[MatchEvent], int]:
+        query = db.query(MatchEvent)
+
+        if match_id is not None:
+            query = query.filter(MatchEvent.match_id == match_id)
+
+        if player_id is not None:
+            query = query.filter(
+                or_(
+                    MatchEvent.player_id == player_id,
+                    MatchEvent.assisting_player_id == player_id,
+                )
+            )
+
+        if event_type is not None:
+            query = query.filter(MatchEvent.event_type == event_type)
+
+        total = query.count()
+
+        items = (
+            query.order_by(
                 MatchEvent.match_id.asc(),
                 MatchEvent.minute.asc(),
             )
+            .offset(skip)
+            .limit(limit)
             .all()
         )
+
+        return items, total
 
     @staticmethod
     def get_by_id(
         db: Session,
         event_id: int,
-    ):
+    ) -> MatchEvent | None:
         return (
             db.query(MatchEvent)
             .filter(MatchEvent.id == event_id)
@@ -113,7 +142,7 @@ class MatchEventRepository:
     def create(
         db: Session,
         event: MatchEvent,
-    ):
+    ) -> MatchEvent:
         db.add(event)
         db.commit()
         db.refresh(event)
@@ -123,7 +152,7 @@ class MatchEventRepository:
     def update(
         db: Session,
         event: MatchEvent,
-    ):
+    ) -> MatchEvent:
         db.commit()
         db.refresh(event)
         return event
@@ -132,6 +161,6 @@ class MatchEventRepository:
     def delete(
         db: Session,
         event: MatchEvent,
-    ):
+    ) -> None:
         db.delete(event)
         db.commit()

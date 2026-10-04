@@ -4,17 +4,24 @@ from fastapi.testclient import TestClient
 def build_stats_context(
     client: TestClient,
     auth_headers: dict[str, str],
+    slug: str = "",
 ):
     home = client.post(
         "/api/v1/teams/",
         headers=auth_headers,
-        json={"name": "Stats Home", "category": "Senior"},
+        json={
+            "name": f"Stats Home {slug}".strip(),
+            "category": "Senior",
+        },
     ).json()
 
     away = client.post(
         "/api/v1/teams/",
         headers=auth_headers,
-        json={"name": "Stats Away", "category": "Senior"},
+        json={
+            "name": f"Stats Away {slug}".strip(),
+            "category": "Senior",
+        },
     ).json()
 
     scorer = client.post(
@@ -57,14 +64,14 @@ def build_stats_context(
         },
     ).json()
 
-    return scorer, assistant, match
+    return scorer, assistant, match, home, away
 
 
 def test_player_statistics_from_events(
     client: TestClient,
     auth_headers: dict[str, str],
 ) -> None:
-    scorer, assistant, match = build_stats_context(
+    scorer, assistant, match, _, _ = build_stats_context(
         client,
         auth_headers,
     )
@@ -136,11 +143,58 @@ def test_statistics_unknown_player(
     assert response.status_code == 404
 
 
+def test_team_statistics(
+    client: TestClient,
+    auth_headers: dict[str, str],
+) -> None:
+    _, _, match, home, _ = build_stats_context(
+        client,
+        auth_headers,
+    )
+
+    client.put(
+        f"/api/v1/matches/{match['id']}",
+        headers=auth_headers,
+        json={
+            "status": "Completed",
+            "home_score": 3,
+            "away_score": 1,
+        },
+    )
+
+    response = client.get(
+        f"/api/v1/statistics/team/{home['id']}",
+        headers=auth_headers,
+    )
+
+    assert response.status_code == 200
+
+    body = response.json()
+
+    assert body["played"] == 1
+    assert body["wins"] == 1
+    assert body["goals_for"] == 3
+    assert body["goals_against"] == 1
+    assert body["goal_difference"] == 2
+
+
+def test_team_statistics_unknown_team(
+    client: TestClient,
+    auth_headers: dict[str, str],
+) -> None:
+    response = client.get(
+        "/api/v1/statistics/team/9999",
+        headers=auth_headers,
+    )
+
+    assert response.status_code == 404
+
+
 def test_player_statistics_crud(
     client: TestClient,
     auth_headers: dict[str, str],
 ) -> None:
-    scorer, _, match = build_stats_context(
+    scorer, _, match, _, _ = build_stats_context(
         client,
         auth_headers,
     )
@@ -177,7 +231,72 @@ def test_player_statistics_crud(
     fetched = client.get(
         "/api/v1/player-statistics/",
         headers=auth_headers,
+        params={"mvp_only": True},
     )
 
     assert fetched.status_code == 200
-    assert len(fetched.json()) >= 1
+    assert fetched.json()["total"] == 1
+
+
+def test_duplicate_player_match_statistics_rejected(
+    client: TestClient,
+    auth_headers: dict[str, str],
+) -> None:
+    scorer, _, match, _, _ = build_stats_context(
+        client,
+        auth_headers,
+    )
+
+    payload = {
+        "player_id": scorer["id"],
+        "match_id": match["id"],
+        "goals": 1,
+    }
+
+    first = client.post(
+        "/api/v1/player-statistics/",
+        headers=auth_headers,
+        json=payload,
+    )
+
+    assert first.status_code == 201
+
+    second = client.post(
+        "/api/v1/player-statistics/",
+        headers=auth_headers,
+        json=payload,
+    )
+
+    assert second.status_code == 400
+
+
+def test_player_statistics_unknown_references(
+    client: TestClient,
+    auth_headers: dict[str, str],
+) -> None:
+    scorer, _, match, _, _ = build_stats_context(
+        client,
+        auth_headers,
+    )
+
+    unknown_player = client.post(
+        "/api/v1/player-statistics/",
+        headers=auth_headers,
+        json={
+            "player_id": 9999,
+            "match_id": match["id"],
+        },
+    )
+
+    assert unknown_player.status_code == 404
+
+    unknown_match = client.post(
+        "/api/v1/player-statistics/",
+        headers=auth_headers,
+        json={
+            "player_id": scorer["id"],
+            "match_id": 9999,
+        },
+    )
+
+    assert unknown_match.status_code == 404

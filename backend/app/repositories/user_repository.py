@@ -1,6 +1,7 @@
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
-from app.models.user import User
+from app.models.user import User, UserRole
 
 
 class UserRepository:
@@ -30,6 +31,44 @@ class UserRepository:
             .filter(User.email == email)
             .first()
         )
+
+    @staticmethod
+    def get_all(
+        db: Session,
+        *,
+        skip: int = 0,
+        limit: int = 50,
+        search: str | None = None,
+        role: UserRole | None = None,
+        is_active: bool | None = None,
+    ) -> tuple[list[User], int]:
+        query = db.query(User)
+
+        if search:
+            pattern = f"%{search}%"
+            query = query.filter(
+                or_(
+                    User.full_name.ilike(pattern),
+                    User.email.ilike(pattern),
+                )
+            )
+
+        if role is not None:
+            query = query.filter(User.role == role)
+
+        if is_active is not None:
+            query = query.filter(User.is_active == is_active)
+
+        total = query.count()
+
+        items = (
+            query.order_by(User.full_name)
+            .offset(skip)
+            .limit(limit)
+            .all()
+        )
+
+        return items, total
 
     @staticmethod
     def create(

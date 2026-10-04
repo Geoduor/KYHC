@@ -10,8 +10,36 @@ from app.schemas.training_session import (
 class TrainingSessionRepository:
 
     @staticmethod
-    def get_all(db: Session):
-        return db.query(TrainingSession).all()
+    def get_all(
+        db: Session,
+        *,
+        skip: int = 0,
+        limit: int = 50,
+        coach_id: int | None = None,
+        is_completed: bool | None = None,
+    ) -> tuple[list[TrainingSession], int]:
+        query = db.query(TrainingSession)
+
+        if coach_id is not None:
+            query = query.filter(
+                TrainingSession.coach_id == coach_id
+            )
+
+        if is_completed is not None:
+            query = query.filter(
+                TrainingSession.is_completed == is_completed
+            )
+
+        total = query.count()
+
+        items = (
+            query.order_by(TrainingSession.session_date.desc())
+            .offset(skip)
+            .limit(limit)
+            .all()
+        )
+
+        return items, total
 
     @staticmethod
     def get_by_id(db: Session, session_id: int):

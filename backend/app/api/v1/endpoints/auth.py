@@ -8,10 +8,10 @@ from app.core.security import (
     create_access_token,
 )
 from app.database.dependencies import get_db
-from app.models.user import User
+from app.models.user import User, UserRole
 from app.repositories.user_repository import UserRepository
 from app.schemas.token import Token
-from app.schemas.user import UserCreate, UserResponse
+from app.schemas.user import UserRegister, UserResponse
 
 router = APIRouter()
 
@@ -22,11 +22,14 @@ router = APIRouter()
     status_code=status.HTTP_201_CREATED,
 )
 def register(
-    user: UserCreate,
+    user: UserRegister,
     db: Session = Depends(get_db),
 ):
     """
-    Register a new user.
+    Register a new player account.
+
+    Self-registration always creates a PLAYER. Staff accounts are
+    created by administrators through POST /users/.
     """
 
     existing_user = UserRepository.get_by_email(
@@ -44,7 +47,7 @@ def register(
         full_name=user.full_name,
         email=user.email,
         hashed_password=hash_password(user.password),
-        role=user.role,
+        role=UserRole.PLAYER,
     )
 
     return UserRepository.create(
@@ -85,6 +88,12 @@ def login(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    if not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Inactive user account",
         )
 
     access_token = create_access_token(

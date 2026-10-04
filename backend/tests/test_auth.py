@@ -8,14 +8,13 @@ def test_health_check(client: TestClient) -> None:
     assert response.json()["status"] == "healthy"
 
 
-def test_register_user(client: TestClient) -> None:
+def test_register_creates_player(client: TestClient) -> None:
     response = client.post(
         "/api/v1/auth/register",
         json={
             "full_name": "New User",
             "email": "new@test.com",
             "password": "secret123",
-            "role": "COACH",
         },
     )
 
@@ -24,9 +23,41 @@ def test_register_user(client: TestClient) -> None:
     data = response.json()
 
     assert data["email"] == "new@test.com"
-    assert data["role"] == "COACH"
+    # Public registration is always a player.
+    assert data["role"] == "PLAYER"
     assert "password" not in data
     assert "hashed_password" not in data
+
+
+def test_register_cannot_choose_role(
+    client: TestClient,
+) -> None:
+    response = client.post(
+        "/api/v1/auth/register",
+        json={
+            "full_name": "Sneaky Admin",
+            "email": "sneaky@test.com",
+            "password": "secret123",
+            "role": "SUPER_ADMIN",
+        },
+    )
+
+    assert response.status_code == 422
+
+
+def test_register_short_password_rejected(
+    client: TestClient,
+) -> None:
+    response = client.post(
+        "/api/v1/auth/register",
+        json={
+            "full_name": "New User",
+            "email": "short@test.com",
+            "password": "short",
+        },
+    )
+
+    assert response.status_code == 422
 
 
 def test_register_duplicate_email(
@@ -36,7 +67,6 @@ def test_register_duplicate_email(
         "full_name": "Duplicate",
         "email": "duplicate@test.com",
         "password": "secret123",
-        "role": "PLAYER",
     }
 
     first = client.post(
@@ -61,7 +91,6 @@ def test_login_success(client: TestClient) -> None:
             "full_name": "Login User",
             "email": "login@test.com",
             "password": "secret123",
-            "role": "CLUB_ADMIN",
         },
     )
 
@@ -90,7 +119,6 @@ def test_login_wrong_password(
             "full_name": "Wrong Pass",
             "email": "wrong@test.com",
             "password": "secret123",
-            "role": "PLAYER",
         },
     )
 
@@ -103,6 +131,35 @@ def test_login_wrong_password(
     )
 
     assert response.status_code == 401
+
+
+def test_login_inactive_user_rejected(
+    client: TestClient,
+    db,
+    admin_user,
+) -> None:
+    from tests.conftest import make_user
+
+    from app.models.user import UserRole
+
+    inactive = make_user(
+        db,
+        email="inactive@test.com",
+        role=UserRole.PLAYER,
+    )
+
+    inactive.is_active = False
+    db.commit()
+
+    response = client.post(
+        "/api/v1/auth/login",
+        data={
+            "username": "inactive@test.com",
+            "password": "password123",
+        },
+    )
+
+    assert response.status_code == 403
 
 
 def test_get_current_user(

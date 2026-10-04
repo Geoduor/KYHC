@@ -10,8 +10,46 @@ from app.schemas.training_attendance import (
 class TrainingAttendanceRepository:
 
     @staticmethod
-    def get_all(db: Session):
-        return db.query(TrainingAttendance).all()
+    def get_all(
+        db: Session,
+        *,
+        skip: int = 0,
+        limit: int = 50,
+        training_session_id: int | None = None,
+        player_id: int | None = None,
+        status=None,
+    ) -> tuple[list[TrainingAttendance], int]:
+        query = db.query(TrainingAttendance)
+
+        if training_session_id is not None:
+            query = query.filter(
+                TrainingAttendance.training_session_id
+                == training_session_id
+            )
+
+        if player_id is not None:
+            query = query.filter(
+                TrainingAttendance.player_id == player_id
+            )
+
+        if status is not None:
+            query = query.filter(
+                TrainingAttendance.status == status
+            )
+
+        total = query.count()
+
+        items = (
+            query.order_by(
+                TrainingAttendance.training_session_id.desc(),
+                TrainingAttendance.player_id,
+            )
+            .offset(skip)
+            .limit(limit)
+            .all()
+        )
+
+        return items, total
 
     @staticmethod
     def get_by_id(

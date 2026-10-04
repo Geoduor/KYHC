@@ -10,12 +10,38 @@ class TeamRepository:
     """
 
     @staticmethod
-    def get_all(db: Session) -> list[Team]:
-        return (
-            db.query(Team)
-            .order_by(Team.name)
+    def get_all(
+        db: Session,
+        *,
+        skip: int = 0,
+        limit: int = 50,
+        search: str | None = None,
+        category: str | None = None,
+        is_active: bool | None = None,
+    ) -> tuple[list[Team], int]:
+        query = db.query(Team)
+
+        if search:
+            query = query.filter(
+                Team.name.ilike(f"%{search}%")
+            )
+
+        if category:
+            query = query.filter(Team.category == category)
+
+        if is_active is not None:
+            query = query.filter(Team.is_active == is_active)
+
+        total = query.count()
+
+        items = (
+            query.order_by(Team.name)
+            .offset(skip)
+            .limit(limit)
             .all()
         )
+
+        return items, total
 
     @staticmethod
     def get_by_id(

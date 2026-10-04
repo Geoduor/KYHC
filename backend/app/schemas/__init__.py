@@ -1,7 +1,11 @@
+from .common import Page
+
 from .user import (
     UserCreate,
     UserLogin,
+    UserRegister,
     UserResponse,
+    UserUpdate,
 )
 
 from .token import (
@@ -58,7 +62,10 @@ from .player_statistic import (
 )
 
 __all__ = [
+    "Page",
+    "UserRegister",
     "UserCreate",
+    "UserUpdate",
     "UserLogin",
     "UserResponse",
     "Token",

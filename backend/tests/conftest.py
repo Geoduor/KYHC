@@ -2,14 +2,16 @@ from collections.abc import Generator
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from app.core.config import settings
+from app.core.security import hash_password
 from app.database.base import Base
 from app.database.dependencies import get_db
 from app.main import app
+from app.models.user import User, UserRole
 
 
 # Fall back to SQLite for tests unless TEST_DATABASE_URL is provided.
@@ -77,29 +79,108 @@ def client(db: Session) -> Generator[TestClient, None, None]:
     app.dependency_overrides.clear()
 
 
-@pytest.fixture
-def admin_token(client: TestClient) -> str:
-    client.post(
-        "/api/v1/auth/register",
-        json={
-            "full_name": "Admin User",
-            "email": "admin@test.com",
-            "password": "adminpass123",
-            "role": "CLUB_ADMIN",
-        },
+def make_user(
+    db: Session,
+    *,
+    email: str,
+    role: UserRole,
+    password: str = "password123",
+    full_name: str = "Test User",
+) -> User:
+    """
+    Create a user directly in the database with the given role.
+    """
+
+    user = User(
+        full_name=full_name,
+        email=email,
+        hashed_password=hash_password(password),
+        role=role,
     )
 
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+
+    return user
+
+
+def login_token(
+    client: TestClient,
+    email: str,
+    password: str = "password123",
+) -> str:
     response = client.post(
         "/api/v1/auth/login",
         data={
-            "username": "admin@test.com",
-            "password": "adminpass123",
+            "username": email,
+            "password": password,
         },
     )
+
+    assert response.status_code == 200, response.text
 
     return response.json()["access_token"]
 
 
 @pytest.fixture
+def admin_user(db: Session) -> User:
+    return make_user(
+        db,
+        email="admin@test.com",
+        role=UserRole.CLUB_ADMIN,
+        full_name="Admin User",
+    )
+
+
+@pytest.fixture
+def player_user(db: Session) -> User:
+    return make_user(
+        db,
+        email="player@test.com",
+        role=UserRole.PLAYER,
+        full_name="Player User",
+    )
+
+
+@pytest.fixture
+def coach_user(db: Session) -> User:
+    return make_user(
+        db,
+        email="coach@test.com",
+        role=UserRole.COACH,
+        full_name="Coach User",
+    )
+
+
+@pytest.fixture
+def admin_token(
+    client: TestClient,
+    admin_user: User,
+) -> str:
+    return login_token(client, "admin@test.com")
+
+
+@pytest.fixture
 def auth_headers(admin_token: str) -> dict[str, str]:
     return {"Authorization": f"Bearer {admin_token}"}
+
+
+@pytest.fixture
+def player_headers(
+    client: TestClient,
+    player_user: User,
+) -> dict[str, str]:
+    token = login_token(client, "player@test.com")
+
+    return {"Authorization": f"Bearer {token}"}
+
+
+@pytest.fixture
+def coach_headers(
+    client: TestClient,
+    coach_user: User,
+) -> dict[str, str]:
+    token = login_token(client, "coach@test.com")
+
+    return {"Authorization": f"Bearer {token}"}

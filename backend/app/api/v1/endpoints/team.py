@@ -1,11 +1,14 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
+from app.core.pagination import Pagination
+from app.core.roles import MANAGEMENT_ROLES
 from app.database.dependencies import get_db
-from app.dependencies.auth import get_current_user
+from app.dependencies.auth import get_current_user, require_roles
 from app.models.team import Team
 from app.models.user import User
 from app.repositories.team_repository import TeamRepository
+from app.schemas.common import Page
 from app.schemas.team import (
     TeamCreate,
     TeamResponse,
@@ -23,7 +26,9 @@ router = APIRouter()
 def create_team(
     team: TeamCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(
+        require_roles(*MANAGEMENT_ROLES)
+    ),
 ):
     """
     Create a new team.
@@ -55,16 +60,44 @@ def create_team(
 
 @router.get(
     "/",
-    response_model=list[TeamResponse],
+    response_model=Page[TeamResponse],
 )
 def get_teams(
     db: Session = Depends(get_db),
+    pagination: Pagination = Depends(),
+    search: str | None = Query(
+        None,
+        description="Search by team name",
+    ),
+    category: str | None = Query(
+        None,
+        description="Filter by category",
+    ),
+    is_active: bool | None = Query(
+        None,
+        description="Filter by active status",
+    ),
     current_user: User = Depends(get_current_user),
 ):
     """
-    Return all teams.
+    List teams with pagination and filters.
     """
-    return TeamRepository.get_all(db)
+
+    items, total = TeamRepository.get_all(
+        db,
+        skip=pagination.skip,
+        limit=pagination.limit,
+        search=search,
+        category=category,
+        is_active=is_active,
+    )
+
+    return Page(
+        items=items,
+        total=total,
+        skip=pagination.skip,
+        limit=pagination.limit,
+    )
 
 
 @router.get(
@@ -102,7 +135,9 @@ def update_team(
     team_id: int,
     team_data: TeamUpdate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(
+        require_roles(*MANAGEMENT_ROLES)
+    ),
 ):
     """
     Update a team.
@@ -123,6 +158,20 @@ def update_team(
         exclude_unset=True,
     )
 
+    new_name = update_data.get("name")
+
+    if new_name and new_name != team.name:
+        existing_team = TeamRepository.get_by_name(
+            db,
+            new_name,
+        )
+
+        if existing_team:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Team already exists",
+            )
+
     for key, value in update_data.items():
         setattr(team, key, value)
 
@@ -139,7 +188,7 @@ def update_team(
 def delete_team(
     team_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_roles(*MANAGEMENT_ROLES)),
 ):
     """
     Delete a team.
