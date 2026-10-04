@@ -8,7 +8,7 @@ from app.core.config import settings
 from app.database.base import Base
 
 # Import ALL models here so Alembic can detect them
-from app.models.user import User
+import app.models  # noqa: F401
 
 # Alembic Config object
 config = context.config
