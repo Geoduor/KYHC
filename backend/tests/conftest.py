@@ -1,5 +1,14 @@
 import os
+import sys
 from collections.abc import Generator
+from pathlib import Path
+
+# Make the backend package importable regardless of how pytest is
+# invoked (python -m pytest, pytest.exe, CI runners, etc.).
+BACKEND_DIR = Path(__file__).resolve().parents[1]
+
+if str(BACKEND_DIR) not in sys.path:
+    sys.path.insert(0, str(BACKEND_DIR))
 
 # Provide safe defaults so the suite can run anywhere (including CI)
 # before the application settings are imported.

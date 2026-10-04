@@ -216,3 +216,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Keep frontend source files that match Python ignore rules
+!frontend/src/lib/
+!frontend/src/lib/**
