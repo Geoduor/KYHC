@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 
 import { Layout } from "./components/Layout";
 import { RequireAuth } from "./components/RequireAuth";
+import { RouteMeta } from "./components/RouteMeta";
 import CoachesPage from "./pages/CoachesPage";
 import DashboardPage from "./pages/DashboardPage";
 import LoginPage from "./pages/LoginPage";
@@ -14,7 +15,9 @@ import UsersPage from "./pages/UsersPage";
 
 export default function App() {
   return (
-    <Routes>
+    <>
+      <RouteMeta />
+      <Routes>
       <Route path="/login" element={<LoginPage />} />
 
       <Route
@@ -44,5 +47,6 @@ export default function App() {
         }
       />
     </Routes>
+    </>
   );
 }

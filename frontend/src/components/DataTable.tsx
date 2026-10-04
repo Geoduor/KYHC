@@ -36,27 +36,31 @@ export function DataTable<T extends { id: number }>({
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full min-w-full divide-y divide-slate-100 text-sm">
-        <thead>
-          <tr className="text-left text-xs uppercase tracking-wide text-slate-500">
+    <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+      <table className="w-full min-w-[640px] divide-y divide-slate-100 text-sm">
+        <thead className="sticky top-0">
+          <tr className="bg-white text-left text-[11px] uppercase tracking-wider text-slate-500">
             {columns.map((column) => (
               <th
                 key={column.header}
-                className={`px-3 py-2.5 font-semibold ${column.className ?? ""}`}
+                scope="col"
+                className={`whitespace-nowrap px-3 py-3 font-bold ${column.className ?? ""}`}
               >
                 {column.header}
               </th>
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-50">
+        <tbody className="divide-y divide-slate-100">
           {rows.map((row) => (
-            <tr key={row.id} className="hover:bg-slate-50/60">
+            <tr
+              key={row.id}
+              className="transition hover:bg-brand-50/50"
+            >
               {columns.map((column) => (
                 <td
                   key={column.header}
-                  className={`px-3 py-2.5 ${column.className ?? ""}`}
+                  className={`px-3 py-3 align-middle ${column.className ?? ""}`}
                 >
                   {column.render(row)}
                 </td>
@@ -84,28 +88,30 @@ export function Pagination({
   const pageCount = Math.max(1, Math.ceil(total / limit));
 
   return (
-    <div className="mt-4 flex items-center justify-between text-sm text-slate-600">
-      <span>
-        Showing {Math.min(skip + 1, total)}–{Math.min(skip + limit, total)} of{" "}
-        {total}
+    <div className="mt-4 flex flex-col gap-3 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between">
+      <span className="text-xs sm:text-sm">
+        Showing {total === 0 ? 0 : Math.min(skip + 1, total)}–
+        {Math.min(skip + limit, total)} of {total}
       </span>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center justify-between gap-2 sm:justify-end">
         <Button
           variant="secondary"
+          size="sm"
           disabled={skip === 0}
           onClick={() => onChange(Math.max(0, skip - limit))}
         >
-          Previous
+          ← Prev
         </Button>
-        <span className="px-1 text-xs text-slate-500">
+        <span className="px-1 text-xs font-medium text-slate-500">
           Page {page} of {pageCount}
         </span>
         <Button
           variant="secondary"
+          size="sm"
           disabled={skip + limit >= total}
           onClick={() => onChange(skip + limit)}
         >
-          Next
+          Next →
         </Button>
       </div>
     </div>

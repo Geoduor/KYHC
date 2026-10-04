@@ -376,7 +376,7 @@ export default function StatisticsPage() {
                   value={teamSummary.losses}
                 />
               </div>
-              <div className="mt-3 grid grid-cols-3 gap-3">
+              <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
                 <SummaryTile
                   label="Goals for"
                   value={teamSummary.goals_for}
@@ -454,7 +454,7 @@ export default function StatisticsPage() {
             <Select
               value={playerId}
               onChange={(event) => setPlayerId(event.target.value)}
-              className="w-64"
+              className="w-full sm:w-64"
             >
               <option value="">All players</option>
               {players.map((player) => (
@@ -545,7 +545,7 @@ export default function StatisticsPage() {
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           {!editing && (
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <Select
                 label="Player"
                 required
@@ -589,34 +589,34 @@ export default function StatisticsPage() {
             </div>
           )}
 
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             {numberField("goals", "Goals")}
             {numberField("assists", "Assists")}
             {numberField("minutes_played", "Minutes")}
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {numberField("shots", "Shots")}
             {numberField("shots_on_target", "On target")}
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {numberField("passes", "Passes")}
             {numberField("successful_passes", "Successful")}
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {numberField("interceptions", "Interceptions")}
             {numberField("tackles", "Tackles")}
           </div>
 
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             {numberField("green_cards", "Green")}
             {numberField("yellow_cards", "Yellow")}
             {numberField("red_cards", "Red")}
           </div>
 
-          <div className="grid grid-cols-2 items-end gap-3">
+          <div className="grid grid-cols-1 items-end gap-3 sm:grid-cols-2">
             <Input
               label="Rating"
               type="number"

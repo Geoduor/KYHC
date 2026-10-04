@@ -182,12 +182,12 @@ export default function PlayersPage() {
             placeholder="Search by name…"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            className="w-56"
+            className="w-full sm:w-56"
           />
           <Select
             value={teamFilter}
             onChange={(event) => setTeamFilter(event.target.value)}
-            className="w-56"
+            className="w-full sm:w-56"
           >
             <option value="">All teams</option>
             {teams.map((team) => (
@@ -281,7 +281,7 @@ export default function PlayersPage() {
         onClose={() => setFormOpen(false)}
       >
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Input
               label="First name"
               required
@@ -300,7 +300,7 @@ export default function PlayersPage() {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Input
               label="Date of birth"
               type="date"
@@ -325,7 +325,7 @@ export default function PlayersPage() {
             </Select>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Input
               label="Position"
               required
@@ -368,7 +368,7 @@ export default function PlayersPage() {
             ))}
           </Select>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Input
               label="Phone"
               value={form.phone}

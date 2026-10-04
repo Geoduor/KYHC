@@ -165,7 +165,7 @@ export default function CoachesPage() {
             placeholder="Search by name or email…"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            className="w-64"
+            className="w-full sm:w-64"
           />
         </div>
 
@@ -249,7 +249,7 @@ export default function CoachesPage() {
         onClose={() => setFormOpen(false)}
       >
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Input
               label="First name"
               required
@@ -296,7 +296,7 @@ export default function CoachesPage() {
             ))}
           </Select>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Input
               label="Phone"
               value={form.phone}

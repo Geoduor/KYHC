@@ -1,0 +1,17 @@
+{
+  "name": "KYHC Club Management",
+  "short_name": "KYHC",
+  "description": "Manage KYHC teams, players, coaches, fixtures, training and statistics.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#14532d",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -398,7 +398,7 @@ export default function TrainingPage() {
               onChange={(event) =>
                 setCoachFilter(event.target.value)
               }
-              className="w-56"
+              className="w-full sm:w-56"
             >
               <option value="">All coaches</option>
               {coaches.map((coach) => (
@@ -412,7 +412,7 @@ export default function TrainingPage() {
               onChange={(event) =>
                 setCompletedFilter(event.target.value)
               }
-              className="w-48"
+              className="w-full sm:w-48"
             >
               <option value="">All sessions</option>
               <option value="true">Completed</option>
@@ -526,7 +526,7 @@ export default function TrainingPage() {
               onChange={(event) =>
                 setAttendanceSessionFilter(event.target.value)
               }
-              className="w-96"
+              className="w-full sm:w-96"
             >
               <option value="">All sessions</option>
               {allSessions.map((session) => (
@@ -628,7 +628,7 @@ export default function TrainingPage() {
             }
           />
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Input
               label="Date & time"
               type="datetime-local"
@@ -656,7 +656,7 @@ export default function TrainingPage() {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Input
               label="Venue"
               required
@@ -779,7 +779,7 @@ export default function TrainingPage() {
             ))}
           </Select>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Select
               label="Status"
               value={attendanceStatus}

@@ -186,12 +186,12 @@ export default function UsersPage() {
             placeholder="Search by name or email…"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            className="w-64"
+            className="w-full sm:w-64"
           />
           <Select
             value={roleFilter}
             onChange={(event) => setRoleFilter(event.target.value)}
-            className="w-48"
+            className="w-full sm:w-48"
           >
             <option value="">All roles</option>
             {ROLES.map((role) => (
@@ -203,7 +203,7 @@ export default function UsersPage() {
           <Select
             value={activeFilter}
             onChange={(event) => setActiveFilter(event.target.value)}
-            className="w-40"
+            className="w-full sm:w-40"
           >
             <option value="">Any status</option>
             <option value="true">Active</option>

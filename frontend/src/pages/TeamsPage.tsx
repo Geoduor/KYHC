@@ -136,13 +136,13 @@ export default function TeamsPage() {
             placeholder="Search by name…"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            className="w-56"
+            className="w-full sm:w-56"
           />
           <Input
             placeholder="Filter by category…"
             value={category}
             onChange={(event) => setCategory(event.target.value)}
-            className="w-56"
+            className="w-full sm:w-56"
           />
         </div>
 

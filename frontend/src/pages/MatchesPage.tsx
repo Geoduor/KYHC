@@ -185,7 +185,7 @@ export default function MatchesPage() {
           <Select
             value={statusFilter}
             onChange={(event) => setStatusFilter(event.target.value)}
-            className="w-48"
+            className="w-full sm:w-48"
           >
             <option value="">All statuses</option>
             <option>Scheduled</option>
@@ -197,7 +197,7 @@ export default function MatchesPage() {
           <Select
             value={teamFilter}
             onChange={(event) => setTeamFilter(event.target.value)}
-            className="w-56"
+            className="w-full sm:w-56"
           >
             <option value="">All teams</option>
             {teams.map((team) => (
@@ -300,7 +300,7 @@ export default function MatchesPage() {
         onClose={() => setFormOpen(false)}
       >
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Select
               label="Home team"
               required
@@ -343,7 +343,7 @@ export default function MatchesPage() {
             </Select>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Input
               label="Competition"
               required
@@ -365,7 +365,7 @@ export default function MatchesPage() {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Input
               label="Date & time"
               type="datetime-local"
@@ -392,7 +392,7 @@ export default function MatchesPage() {
             </Select>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Input
               label="Home score"
               type="number"
