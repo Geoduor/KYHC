@@ -1,8 +1,14 @@
 import json
+from pathlib import Path
 from typing import Annotated
 
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
+
+# Resolve backend/.env relative to this file so the settings load
+# correctly no matter which directory the process starts from
+# (backend/, the repo root, or a test runner).
+BACKEND_DIR = Path(__file__).resolve().parents[2]
 
 
 class Settings(BaseSettings):
@@ -47,7 +53,7 @@ class Settings(BaseSettings):
         return value
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=BACKEND_DIR / ".env",
         case_sensitive=True,
     )
 
