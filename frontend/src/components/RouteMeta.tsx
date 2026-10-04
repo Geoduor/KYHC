@@ -48,12 +48,12 @@ export function RouteMeta() {
       : pathname;
 
     document.title =
-      TITLES[base] ?? "KYHC — Kisumu Youngsters Hockey Club Management";
+      TITLES[base] ?? "KYHC — Kisumu Youngstars Hockey Club Management";
 
     upsertMeta(
       "description",
       DESCRIPTIONS[base] ??
-        "Manage teams, players, coaches, fixtures, training sessions and statistics for Kisumu Youngsters Hockey Club.",
+        "Manage teams, players, coaches, fixtures, training sessions and statistics for Kisumu Youngstars Hockey Club.",
     );
   }, [pathname]);
 

@@ -1,6 +1,6 @@
-# KYHC — Kisumu Youngsters Hockey Club Management System
+# KYHC — Kisumu Youngstars Hockey Club Management System
 
-A club management system for **Kisumu Youngsters Hockey Club**.
+A club management system for **Kisumu Youngstars Hockey Club**.
 
 The system tracks teams, players, coaches, matches, match events, training
 sessions, attendance, and player statistics — with JWT authentication and

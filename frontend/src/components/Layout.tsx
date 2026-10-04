@@ -44,13 +44,13 @@ function Brand() {
     <div className="flex items-center gap-3">
       <img
         src="/logo.jpeg"
-        alt="Kisumu Youngsters Hockey Club logo"
+        alt="Kisumu Youngstars Hockey Club logo"
         className="h-10 w-10 shrink-0 rounded-xl bg-white object-contain shadow-card ring-1 ring-slate-200"
       />
       <div className="min-w-0">
         <p className="truncate text-sm font-bold text-slate-900">KYHC</p>
         <p className="truncate text-xs text-slate-500">
-          Kisumu Youngsters HC
+          Kisumu Youngstars HC
         </p>
       </div>
     </div>

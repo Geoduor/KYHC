@@ -64,13 +64,13 @@ export default function LoginPage() {
         <div className="relative flex items-center gap-3">
           <img
             src="/logo.jpeg"
-            alt="Kisumu Youngsters Hockey Club logo"
+            alt="Kisumu Youngstars Hockey Club logo"
             className="h-12 w-12 rounded-2xl bg-white object-contain shadow-card ring-1 ring-white/20"
           />
           <div>
             <p className="text-sm font-bold tracking-tight">KYHC</p>
             <p className="text-xs text-brand-200">
-              Kisumu Youngsters Hockey Club
+              Kisumu Youngstars Hockey Club
             </p>
           </div>
         </div>
@@ -84,7 +84,7 @@ export default function LoginPage() {
           </h1>
           <p className="mt-3 max-w-md text-sm leading-relaxed text-brand-100 sm:text-base">
             Squads, fixtures, training sessions and statistics for
-            Kisumu Youngsters Hockey Club — built for coaches,
+            Kisumu Youngstars Hockey Club — built for coaches,
             managers and admins.
           </p>
 

@@ -6,7 +6,7 @@ from app.core.config import settings
 
 app = FastAPI(
     title="KYHC API",
-    description="Kisumu Youngsters Hockey Club Management System API",
+    description="Kisumu Youngstars Hockey Club Management System API",
     version="1.0.0",
 )
 
